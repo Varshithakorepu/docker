@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'varshitha1105/mycbit-jenkins'
+        DOCKER_HUB_REPO = 'varshitha1105/flask-jenkins'
     }
 
     stages {
@@ -16,9 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
-                script {
-                    dockerImage = docker.build("${DOCKER_HUB_REPO}:latest")
-                }
+                bat 'docker build -t %DOCKER_HUB_REPO%:latest .'
             }
         }
 
@@ -26,7 +24,7 @@ pipeline {
             steps {
                 echo 'Logging in to Docker Hub...'
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    bat 'echo %PASS% | docker login -u %USER% --password-stdin'
                 }
             }
         }
@@ -34,9 +32,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                script {
-                    dockerImage.push('latest')
-                }
+                bat 'docker push %DOCKER_HUB_REPO%:latest'
             }
         }
     }
