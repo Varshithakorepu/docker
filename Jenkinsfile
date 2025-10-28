@@ -23,8 +23,12 @@ pipeline {
         stage('Login to Docker Hub') {
             steps {
                 echo 'Logging in to Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-                    bat 'echo %PASS% | docker login -u %USER% --password-stdin'
+               withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+    sh "echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USER --password-stdin"
+    sh "docker tag flask-jenkins varshitha1105/flask-jenkins:latest"
+    sh "docker push varshitha1105/flask-jenkins:latest"
+}
+
                 }
             }
         }
